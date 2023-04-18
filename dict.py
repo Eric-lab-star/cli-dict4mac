@@ -13,17 +13,19 @@ BOLD = "\033[1m"
 UNDERLINE = "\033[4m"
 
 
-exit = False
-
-
 def main():
-    searchword = input(BOLD + "Enter word: ")
+    try:
+        searchword = sys.argv[1]
+        sys.argv = sys.argv[:1]
+    except IndexError:
+        searchword = input(BOLD + 'Enter word or enter "q" to quit: ' + ENDC)
     getWord(searchword)
     print("\n\n")
 
 
 def getWord(searchword: str):
-    if searchword == "_exit":
+    if searchword == "q":
+        print(ENDC + "exited")
         sys.exit()
     wordrange = (0, len(searchword))
     result = DCSCopyTextDefinition(None, searchword, wordrange)
@@ -31,6 +33,9 @@ def getWord(searchword: str):
         print("{} not found in Dictionary.".format(searchword))
     else:
         # result = re.sub(r"\|(.+?)\|", PURPLE + r"/\1/" + ENDC, result)
+        result = re.sub(
+            r"{}".format(searchword), BOLD + "{}".format(searchword) + ENDC, result
+        )
         result = re.sub(r"(?<!\d)(\d)(?!\d)\s", "\n " + BOLD + r"\1: " + ENDC, result)
         result = re.sub(r"▶", "\n\n " + RED + "▶ " + ENDC, result)
         result = re.sub(r"• ", "\n   " + GREEN + "• " + ENDC, result)
@@ -47,5 +52,5 @@ def greeting():
 
 
 if __name__ == "__main__":
-    while not exit:
+    while True:
         main()
